@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GIWA Launch Radar · built on the Ammora SDK</title>
+  <meta name="description" content="A simple launchpad terminal for GIWA. See every token launched through Ammora, track its bonding curve to graduation, and buy or sell in a few clicks. Built with @ammora-protocol/sdk." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%2300e0a4'/><circle cx='16' cy='16' r='6' fill='%230b0f14'/></svg>" />
+  <script type="module" crossorigin src="./assets/index-CpoGjY3I.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-D0IJJ698.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="dot"></span>GIWA Launch Radar</div>
+    <div class="top-right">
+      <span class="net" id="net">GIWA Sepolia</span>
+      <button class="btn ghost" id="connect">Connect wallet</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="pill">Built with the Ammora SDK · GIWA Sepolia testnet</div>
+    <h1>Every new token on GIWA.<br /><span>One simple screen.</span></h1>
+    <p class="lead">Launch Radar finds every token launched through Ammora, shows how close each one is to graduating, and lets you buy or sell straight from its bonding curve. No guesswork.</p>
+    <div class="stats" id="stats">
+      <div class="stat"><b id="s-total">–</b><span>Launches found</span></div>
+      <div class="stat"><b id="s-live">–</b><span>Trading on curve</span></div>
+      <div class="stat"><b id="s-grad">–</b><span>Graduated</span></div>
+      <div class="stat"><b id="s-block">–</b><span>Latest block</span></div>
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="step"><i>1</i><h3>Find</h3><p>We read the Ammora launch factory and list every token it created.</p></div>
+    <div class="step"><i>2</i><h3>Check</h3><p>The SDK reads each curve live: price, ETH raised, fee and progress to graduation.</p></div>
+    <div class="step"><i>3</i><h3>Trade</h3><p>Get an exact quote, then buy or sell from your wallet. You sign every step.</p></div>
+  </section>
+
+  <main class="board">
+    <div class="board-head">
+      <h2>Launches</h2>
+      <div class="filters">
+        <button class="chip on" data-f="all">All</button>
+        <button class="chip" data-f="live">Trading</button>
+        <button class="chip" data-f="grad">Graduated</button>
+        <button class="btn ghost sm" id="refresh">↻ Refresh</button>
+      </div>
+    </div>
+    <div id="list" class="list"><div class="empty">Scanning the Ammora factory on GIWA…</div></div>
+  </main>
+
+  <section class="sdk">
+    <h2>Under the hood</h2>
+    <p>Everything on chain is read and planned with <code>@ammora-protocol/sdk</code> 0.3.9. Nothing is custodial: the app only prepares transactions and your wallet signs them.</p>
+    <div class="code"><pre>import { AmmoraV4LaunchCurveClient, classifyAmmoraV4ExactInputFill,
+  giwaSepoliaAutoRoute } from "@ammora-protocol/sdk";
+
+const curve  = new AmmoraV4LaunchCurveClient(client, curveAddr, core);
+const state  = await curve.getState();                 // price, reserves, fee
+const prog   = await curve.getMigrationProgressAtBlock(state.asOfBlock);
+const quote  = await curve.quoteExactInput(amountIn, false);
+const plan   = await curve.planSwapExactInput({ includedAmountIn: amountIn,
+  baseForQuote: false, allowPartialFill: fill.allowPartialFill,
+  slippageBps: 100, recipient, deadline });            // approvals + tx</pre></div>
+  </section>
+
+  <footer>
+    <span>Testnet only. Not financial advice. Built by <a href="https://x.com/AzrarM" target="_blank" rel="noopener">@AzrarM</a> for the Ammora Builder Mission.</span>
+    <span><a href="https://ammora.org" target="_blank" rel="noopener">ammora.org</a> · <a href="https://www.npmjs.com/package/@ammora-protocol/sdk" target="_blank" rel="noopener">SDK</a> · <a href="https://sepolia-explorer.giwa.io" target="_blank" rel="noopener">Explorer</a></span>
+  </footer>
+
+  <div class="modal" id="modal" hidden>
+    <div class="sheet">
+      <button class="x" id="close">×</button>
+      <div id="detail"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+</body>
+</html>
